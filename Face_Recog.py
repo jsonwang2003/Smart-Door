@@ -2,6 +2,22 @@ import cv2 as cv
 import numpy as np
 import face_recognition
 import face_recognition_models
+
+# img = cv.imread('Photos\Caleb3.jpg')
+
+# cv.imshow('Caleb', img)
+# cv.waitKey(0)
+
+# image = face_recognition.load_image_file("Photos\Caleb3.jpg")
+# face_locations = face_recognition.face_locations(image)
+# for box in face_locations:
+#     top, right, bottom, left = box
+#     print("Face at:", top, right, bottom, left)
+# cv.rectangle(image, (left, top), (right, bottom), (0, 255, 0), thickness = 2)
+# cv.imshow('Identify', image)
+
+# Start video capture
+capture = cv.VideoCapture(0)
 import serial
 import time
 
@@ -53,6 +69,7 @@ send_command("False")
 
 time.sleep(1)
 
+# Start Face Detection, capturing frame-by-frame
 while True:
 
 
@@ -102,11 +119,11 @@ while True:
     # Display the resulting image
     cv.imshow('Video', frame)
 
-    if cv.waitKey(1) & 0xFF==ord('q'):
-
+    if cv.waitKey(1) & 0xFF == ord('q'):
         break
 
 capture.release()
+
 #destroys the window
 cv.destroyAllWindows
 ser.close()
