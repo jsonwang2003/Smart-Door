@@ -12,15 +12,20 @@ image_files = [f for f in os.listdir(images_dir) if f.lower().endswith(('.jpg', 
 for img_name in image_files:
     img_path = os.path.join(images_dir, img_name)
     img = cv.imread(img_path)
+
     if img is None:
         print(f"Failed to load {img_path}")
         continue
+    
     # Convert BGR (OpenCV) to RGB
     img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+
     # Inference
     results = model(img_rgb)
+
     # Results
     print(f"Results for {img_name}:")
-    results.print()  # or .show(), .save(), etc.
+    results.show()
+
     # Save results to 'runs/detect/exp*'
     results.save()
