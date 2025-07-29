@@ -48,7 +48,7 @@ time.sleep(2)
 
 unlocked = False
 
-def send_command(cmd, unlockedstatus):
+def send_command(cmd):
 
      # send command with newline
     ser.write((cmd + '\n').encode('ascii'))
@@ -59,13 +59,26 @@ def send_command(cmd, unlockedstatus):
     while ser.in_waiting > 0:
         response = ser.readline().decode('utf-8').strip()
         print("metro1 says:", response)
-    if response == "Time out":
-        unlockedstatus = False
+        if response == "Time out":
+            print("Change false")
+            unlocked = False
+        else:
+            print("Change true")
+            unlocked = True
 
+def read_serial():
+    # read metro1 response (if any)
+    while ser.in_waiting > 0:
+        response = ser.readline().decode('utf-8').strip()
+        print("metro1 says:", response)
+        if response == "Time out":
+            unlocked = False
+            print("Changed to false")
+        else:
+            unlocked = True
+            print("Changed to true")
 
-
-
-send_command("False")
+read_serial()
 
 time.sleep(1)
 
@@ -94,16 +107,16 @@ while True:
         # If there's a match with the first face encoding, use the first one
         # if not, use the known face with the smallest distance to the new face
         face_distances = face_recognition.face_distance(known, face_encodings)
-
         best_match_index = np.argmin(face_distances)
         if matches[best_match_index]:
             name = "Caleb"
             if unlocked == False:
-                send_command("True", unlocked)
+                send_command("True")
                 unlocked = True
-        # elif unlocked == True:
-        #     send_command("False")
-        #     unlocked = False
+        elif unlocked == True:
+            send_command("False")
+            
+
 
         # Draw a box around the face
         cv.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
@@ -114,8 +127,9 @@ while True:
         cv.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     if len(face_encodings) == 0:
-        send_command("False")
+        read_serial()
 
+    # print(unlocked)
     # Display the resulting image
     cv.imshow('Video', frame)
 
