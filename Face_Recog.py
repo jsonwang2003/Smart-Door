@@ -28,7 +28,7 @@ capture=cv.VideoCapture(0)
 
 # Load images to look for
 # Need to make photos folder and add photos you want to check
-caleb_image = face_recognition.load_image_file("Photos\OGCaleb.jpg")
+caleb_image = face_recognition.load_image_file("Photos/OGCaleb.jpg")
 # Load face encoding
 caleb_face_encoding = face_recognition.face_encodings(caleb_image)[0]
 
@@ -82,18 +82,24 @@ read_serial()
 
 time.sleep(1)
 
+process_this_frame = True
+
 # Start Face Detection, capturing frame-by-frame
 while True:
 
-
     # While loop is running capture every frame and process
     ret, frame = capture.read()
-    # Convert frame taken to RGB
-    rgb_frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-    # Use face location function to get face location of the frame
-    face_locations = face_recognition.face_locations(rgb_frame)
-    # Use face encoding function to get the face encoding of the frame
-    face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
+
+    if process_this_frame:
+        
+        # Resize frame of video to 1/4 size for faster face recognition processing
+        small_frame = cv.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        # Convert frame taken to RGB
+        rgb_frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        # Use face location function to get face location of the frame
+        face_locations = face_recognition.face_locations(rgb_frame)
+        # Use face encoding function to get the face encoding of the frame
+        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
 
     # For loop with 3 different variables
     # top, right, bottom, left, takes the top left coordinate and bottom right coordinate of a rectangle that covers the face location for every loop
@@ -101,6 +107,12 @@ while True:
     for (top, right, bottom, left), face_encoding, known in zip(face_locations, face_encodings, known_face_encodings):
         # matches uses compare faces function to compare face encodings shown with the preloaded face encodings with tolerance of 0.42
         # The lower the number, the more accurate it is 
+
+        # top *= 4
+        # right *= 4
+        # bottom *= 4
+        # left *= 4
+
         matches = face_recognition.compare_faces(known, face_encodings, tolerance=0.42)
         name = "Unknown"
 
@@ -110,13 +122,15 @@ while True:
         best_match_index = np.argmin(face_distances)
         if matches[best_match_index]:
             name = "Caleb"
-            if unlocked == False:
-                send_command("True")
-                unlocked = True
-        elif unlocked == True:
+            send_command("True")
+            # if unlocked == False:
+            #     send_command("True")
+            #     unlocked = True
+        # elif unlocked == True:
+        #     read_serial()
+        else:
             send_command("False")
-            
-
+            print("No match")
 
         # Draw a box around the face
         cv.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
@@ -127,7 +141,9 @@ while True:
         cv.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     if len(face_encodings) == 0:
-        read_serial()
+        send_command("No face")
+
+    process_this_frame = not process_this_frame
 
     # print(unlocked)
     # Display the resulting image
