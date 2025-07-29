@@ -2,6 +2,8 @@ import cv2 as cv
 import numpy as np
 import face_recognition
 import face_recognition_models
+import serial
+import time
 
 # img = cv.imread('Photos\Caleb3.jpg')
 
@@ -18,8 +20,6 @@ import face_recognition_models
 
 # Start video capture
 capture = cv.VideoCapture(0)
-import serial
-import time
 
 
 # Captures the video of first video tool
@@ -66,19 +66,19 @@ def send_command(cmd):
             print("Change true")
             unlocked = True
 
-def read_serial():
-    # read metro1 response (if any)
-    while ser.in_waiting > 0:
-        response = ser.readline().decode('utf-8').strip()
-        print("metro1 says:", response)
-        if response == "Time out":
-            unlocked = False
-            print("Changed to false")
-        else:
-            unlocked = True
-            print("Changed to true")
+# def read_serial():
+#     # read metro1 response (if any)
+#     while ser.in_waiting > 0:
+#         response = ser.readline().decode('utf-8').strip()
+#         print("metro1 says:", response)
+#         if response == "Time out":
+#             unlocked = False
+#             print("Changed to false")
+#         else:
+#             unlocked = True
+#             print("Changed to true")
 
-read_serial()
+# read_serial()
 
 time.sleep(1)
 
