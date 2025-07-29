@@ -28,6 +28,7 @@ def send_command(cmd):
 # Start video capture
 capture = cv.VideoCapture(0)
 
+
 # Load images to look for
 # Need to make photos folder and add photos you want to check
 caleb_image = face_recognition.load_image_file("Photos/OGCaleb.jpg")
