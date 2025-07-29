@@ -73,9 +73,9 @@ while True:
         best_match_index = np.argmin(face_distances)
         if matches[best_match_index]:
             name = "Caleb"
-            send_command("True")
+            send_command(True)
         else:
-            send_command("False")
+            send_command(False)
             print("No match")
 
         # Draw a box around the face
