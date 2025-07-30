@@ -6,26 +6,49 @@ import os
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')  # or yolov5n, yolov5m, yolov5l, yolov5x, etc.
 
 # Directory containing images
-images_dir = 'Images'
-image_files = [f for f in os.listdir(images_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+capture = cv.VideoCapture(0)
 
-for img_name in image_files:
-    img_path = os.path.join(images_dir, img_name)
-    img = cv.imread(img_path)
+process_this_frame = True
 
-    if img is None:
-        print(f"Failed to load {img_path}")
-        continue
+while True:
+    ret, img = capture.read()
     
-    # Convert BGR (OpenCV) to RGB
-    img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+    if process_this_frame:  
+        # Resize frame of video to 1/4 size for faster processing
+        small_frame = cv.resize(img, (0, 0), fx=0.25, fy=0.25)
+        
+        # Convert frame taken to RGB
+        rgb_frame = cv.cvtColor(small_frame, cv.COLOR_BGR2RGB)
+        
+        # Perform inference
+        results = model(rgb_frame)
+    
+    scale = 1 / 0.25  # = 4.0
+    for (left, top, right, bottom), conf, cls in zip(results.xyxy[0][:, :4], results.xyxy[0][:, 4], results.xyxy[0][:, 5]):
+        left, top, right, bottom = [int(coord * scale) for coord in (left, top, right, bottom)]
+        cv.rectangle(img, (left, top), (right, bottom), (255, 0, 0), 2)
+        cv.putText(img, f'{model.names[int(cls)]} {conf:.2f}', (left, top - 10), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
-    # Inference
-    results = model(img_rgb)
+    process_this_frame = not process_this_frame
 
-    # Results
-    print(f"Results for {img_name}:")
-    results.show()
+    cv.imshow('YOLOv5 Detection', img)
+    if cv.waitKey(1) & 0xFF == ord('q'):
+        break
 
+<<<<<<< HEAD
     # Save results to 'runs/detect/exp*'
     #results.save()
+=======
+capture.release()
+cv.destroyAllWindows()
+    
+    # # Inference
+    # results = model(img_rgb)
+
+    # # Results
+    # print(f"Results for {img_name}:")
+    # results.show()
+
+    # # Save results to 'runs/detect/exp*'
+    # results.save()
+>>>>>>> 33d65f0d8f9ab3fafba1e1b210e490cb2b452dfc
