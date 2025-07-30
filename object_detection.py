@@ -28,4 +28,4 @@ for img_name in image_files:
     results.show()
 
     # Save results to 'runs/detect/exp*'
-    results.save()
+    #results.save()

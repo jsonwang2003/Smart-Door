@@ -1,0 +1,13 @@
+{
+    "python.languageServer": "Pylance",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingModuleSource": "none",
+        "reportShadowedImports": "none"
+    },
+    "circuitpythonsync.curlibtag": "20250729",
+    "circuitpythonsync.cpbaseversion": "9",
+    "circuitpythonsync.cpfullversion": "9.2.8",
+    "python.analysis.extraPaths": [
+        "c:\\Users\\caleb\\AppData\\Roaming\\Code\\User\\globalStorage\\padgettholdings.circuitpythonsync\\stubs\\circuitpython_stubs-9.2.8"
+    ]
+}
